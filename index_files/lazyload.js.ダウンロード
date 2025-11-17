@@ -1,0 +1,8 @@
+// 共通（ユーザー除く）
+$(document).ready(function(){
+    var height = window.parent.screen.height * 0.9;
+    $('img.lazy').lazyload({
+        effect : "fadeIn",
+        threshold : height
+    });
+});

@@ -1,0 +1,446 @@
+@charset "UTF-8";
+html {
+  font-family: "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", arial;
+  -webkit-text-size-adjust: none;
+  color: #3c3c3c;
+  font-size: 2.666vw;
+}
+
+body {
+  word-wrap: break-word;
+}
+
+img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  vertical-align: bottom;
+}
+
+a {
+  outline: none;
+}
+
+a:hover,
+button:hover {
+  opacity: 0.7;
+}
+
+input {
+  -webkit-appearance: none;
+}
+
+.g-wrapper {
+  margin: 0 auto;
+}
+
+/* 複数行省略 */
+.p-crumpContainer {
+  overflow: hidden;
+}
+.p-crumpContainer .crump {
+  display: -webkit-box;
+  overflow: hidden;
+  /*以下ビルド時に消えてしまう対策*/
+  /* autoprefixer: off */
+  -webkit-box-orient: vertical;
+  /* autoprefixer: on */
+  -webkit-line-clamp: 2;
+}
+
+.u-imgWrap {
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.u-imgWrap img {
+  max-width: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+}
+
+.u-ellipsis {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.u-pcOnly {
+  display: none;
+}
+
+.g-wrapper {
+  background: #fcfffc;
+}
+
+.has-modal {
+  width: 100vw;
+  position: fixed;
+  left: 0;
+  z-index: 3;
+}
+
+.g-header.is-modal {
+  z-index: 3;
+}
+
+.g-header.is-modal .shop-name,
+.g-header.is-modal .btn-logout {
+  z-index: 2;
+}
+
+.g-header.is-modal .mod-menu,
+.g-header.is-modal .btn-logout {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.u-pageTtl {
+  padding: 0 0 3.8rem;
+  background: #fff;
+  font-size: 2.7rem;
+  text-align: center;
+  position: relative;
+  font-weight: bold;
+}
+
+.u-pageTtl:after {
+  content: "";
+  display: block;
+  width: 100px;
+  height: 0.3rem;
+  background: #00ada6;
+  border-radius: 1rem;
+  position: absolute;
+  left: 50%;
+  bottom: 3rem;
+  transform: translateX(-50%);
+}
+
+.u-pageTtl .sub {
+  display: block;
+  margin-top: 1rem;
+  font-size: 2rem;
+}
+
+.f-pageHead {
+  padding-top: 142px;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 0.2rem 0.6rem #0000000d;
+}
+
+.mod-pager {
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.mod-pager .pager-item {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  margin: 0 0.5rem;
+  border: 0.1rem solid #d1d1d1;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+.mod-pager .pager-item svg,
+.mod-pager .pager-item img {
+  width: 0.734rem;
+  height: 1.17rem;
+}
+
+.mod-pager .pager-item:hover,
+.mod-pager .pager-item.current {
+  background: #00ada6;
+  border: none;
+  color: #fff;
+  opacity: 1;
+}
+
+.mod-pager .pager-item:hover .arrow,
+.mod-pager .pager-item.current .arrow {
+  stroke: #fff;
+}
+
+.mod-navi .ttl {
+  display: flex;
+  align-items: center;
+  height: 6rem;
+  padding: 0 4.5rem 0 2rem;
+  font-size: 1.9rem;
+  position: relative;
+}
+.mod-navi .ttl:after {
+  content: "";
+  width: 0.9rem;
+  height: 1.3rem;
+  background: url("/assets/img/entry/pc/common/arr-right.svg") no-repeat left top/contain;
+  position: absolute;
+  top: 2.2rem;
+  right: 2rem;
+  transform: rotate(90deg);
+  transition: 0.3s;
+}
+.mod-navi .ttl.open:after {
+  transform: rotate(-90deg);
+}
+.mod-navi .ttl .support {
+  margin-left: 1.5rem;
+  font-size: 1.4rem;
+}
+.mod-navi .ttl .support a {
+  text-decoration: underline;
+  color: #0085ad;
+}
+.mod-navi .link.public:after, .mod-navi .link.private:after {
+  display: flex;
+  align-items: center;
+  width: 5.3rem;
+  height: 2.6rem;
+  padding: 0 1rem;
+  margin-left: 1.7rem;
+  border-radius: 0.3rem;
+  font-size: 1.1rem;
+  color: #fff;
+  font-weight: bold;
+}
+.mod-navi .link.public:after {
+  content: "公開中";
+  background: #00ada6;
+}
+.mod-navi .link.private:after {
+  content: "非公開";
+  background: #525252;
+}
+.mod-navi .link.unset {
+  flex-wrap: wrap;
+  background: url("/assets/img/entry/pc/common/arr-right-gray.svg") no-repeat right 2rem center/0.9rem auto;
+  color: #9d9d9d;
+  line-height: 1.6;
+  pointer-events: none;
+}
+.mod-navi .link.unset:after {
+  content: "※ネット予約を設定してください";
+  display: block;
+  color: #f47a7a;
+  font-size: 1.2rem;
+}
+
+.mod-navi .link,
+.mod-navi .no_link {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  min-height: 5rem;
+  padding: 2rem 0 2rem 3rem;
+  border-bottom: 0.2rem solid #f5f5f5;
+  background: url("/assets/img/entry/pc/common/arr-right.svg") no-repeat right 2rem center/0.9rem auto;
+  font-size: 1.3rem;
+}
+
+.mod-navi .link:last-child {
+  border-bottom: none;
+}
+
+.mod-navi .no_link {
+  background-color: #d6d6d6;
+}
+
+.navi-list {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding: 3rem 2rem 6rem;
+}
+
+.navi-item {
+  width: 100%;
+  margin-bottom: 2rem;
+  background: #fff;
+  box-shadow: 0 0.3rem 0.6rem #0000000d;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.navi-item.information .basicinfo {
+  display: none;
+}
+.navi-item.room .setting {
+  display: none;
+}
+.navi-item.reservation .mail-template {
+  display: none;
+}
+.navi-item.others .link:not(.link-banner) {
+  display: none;
+}
+.navi-item .contents {
+  display: none;
+}
+.navi-item.customer .new {
+  font-size: 11px;
+  line-height: 2;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 51px;
+  height: 22px;
+  background: #E36386;
+  border-radius: 5px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(-55px, -50%);
+}
+
+.mod-menu {
+  padding: 38px 0 0;
+  background: rgba(245, 244, 242, 0.9);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+.mod-menu .btn-menuClose {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.mod-menu .mod-menu .navi-list {
+  padding-top: 100px;
+}
+
+.manual_link {
+  position: relative;
+  margin-right: 1.5rem;
+}
+.manual_link a {
+  position: absolute;
+  right: 0;
+  bottom: 1.5rem;
+  font-size: 0;
+  font-weight: bold;
+}
+.manual_link a:before {
+  content: "";
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  background: url("/assets/img/entry/pc/common/ico_help.svg") no-repeat left top/contain;
+  padding-right: 0;
+  opacity: 1;
+  vertical-align: bottom;
+}
+.manual_link a:hover {
+  color: #00ada6;
+  text-decoration: underline;
+  text-decoration-color: #00ada6;
+}
+
+.mod-navi .link {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  min-height: 60px;
+  padding: 20px 5px 20px 30px;
+  border-bottom: 2px solid #f5f5f5;
+  background: url("/assets/img/entry/pc/common/arr-right.svg") no-repeat right 30px center/8px 12px;
+}
+.mod-navi .link .open:after,
+.mod-navi .link .unpublish:after {
+  display: flex;
+  align-items: center;
+  width: 53px;
+  height: 26px;
+  padding: 0 10px;
+  margin-left: 17px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: #fff;
+  font-weight: bold;
+}
+.mod-navi .link .open:after {
+  content: "公開中";
+  background: #00ada6;
+}
+.mod-navi .link .unpublish:after {
+  content: "非公開";
+  background: #525252;
+}
+.mod-navi .link.accessmap {
+  flex-wrap: wrap;
+  background: url("/assets/img/entry/pc/common/arr-right.svg") no-repeat right 30px center/8px 12px;
+  line-height: 1.6;
+  padding: 6px 0 0px 30px;
+}
+.mod-navi .link.accessmap:after {
+  content: "※ルーム型・店舗型用の設定項目です";
+  color: #f47a7a;
+  font-size: 12px;
+  padding-top: 6px;
+}
+.mod-navi .link.accessmap.unset {
+  color: #9d9d9d;
+  pointer-events: none;
+}
+.mod-navi .link.accessmap.unset:after {
+  content: "※ルーム型・店舗型用の設定項目です";
+}
+.mod-navi .link.unset {
+  flex-wrap: wrap;
+  background: url("/assets/img/entry/pc/common/arr-right-gray.svg") no-repeat right 30px center/8px 12px;
+  color: #9d9d9d;
+  line-height: 1.6;
+  pointer-events: none;
+  padding: 6px 0 0px 30px;
+}
+.mod-navi .link.unset:after {
+  content: "※ネット予約を設定してください";
+  display: block;
+  color: #f47a7a;
+  font-size: 12px;
+  width: 100%;
+}
+.mod-navi .link.unset-setting {
+  flex-wrap: wrap;
+  background: url("/assets/img/entry/pc/common/arr-right-gray.svg") no-repeat right 30px center/8px 12px;
+  color: #9d9d9d;
+  line-height: 1.6;
+  pointer-events: none;
+  padding: 6px 0 0px 30px;
+}
+.mod-navi .link.unset-setting:after {
+  content: "※料金・コース・オプション設定をしてください";
+  display: block;
+  color: #f47a7a;
+  font-size: 12px;
+}

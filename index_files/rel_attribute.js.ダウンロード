@@ -1,0 +1,37 @@
+// target="_blank"のaタグには脆弱性があるためrel属性に"noopener noreferrer"オプションを付与
+
+// aタグの中身を分解
+$(function () {
+  var aTags = Array.prototype.slice.call(document.getElementsByTagName('a'));
+
+  // 未対応であるIEを除外するため、ブラウザの種別を洗う
+  var userAgent = window.navigator.userAgent.toLowerCase();
+  var isIE = (~userAgent.indexOf('msie') || ~userAgent.indexOf('trident'));
+  let host = location.host;
+
+  function addRels() {
+    if (!isIE) { //IEは弾く
+      aTags.forEach(function (el) {
+        if (el.target === '_blank') {
+          var rels = el.rel.split(' ');
+          if (!~rels.indexOf('noopener')) {
+            rels.push('noopener');
+            el.setAttribute('rel', rels.join(' ').trim());
+          }
+          let link = el.href;
+          let url = new URL(link);
+
+          //ドメインが異なる場合[nofollow]を追記
+          if (host != url.hostname) {
+            if (!~rels.indexOf('nofollow')) {
+              rels.push('nofollow');
+              el.setAttribute('rel', rels.join(' ').trim());
+            }
+          }
+        }
+      });
+    }
+  };
+  // 関数を実行
+  addRels();
+});

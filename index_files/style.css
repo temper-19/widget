@@ -1,0 +1,236 @@
+@charset "UTF-8";
+/* ==================================
+共通部分のページカスタマイズ
+================================== */
+.g-main {
+  background: #f5f4f2;
+  padding: 3rem 2rem 10rem;
+}
+
+.u-pageTtl {
+  font-size: 2rem;
+}
+.u-pageTtl:after {
+  bottom: 2.8rem;
+}
+
+/* ==================================
+リンクバナー
+================================== */
+.f-banner {
+  border-radius: 1rem;
+  background: #fff;
+  padding: 3rem 2rem;
+  margin: 3rem auto;
+  box-shadow: 0 0.3rem 0.6rem #0000000d;
+}
+.f-banner .banner-ttl {
+  font-size: 1.8rem;
+  font-weight: bold;
+  line-height: 1.6;
+}
+.f-banner .note-ttl {
+  font-size: 22px;
+}
+.f-banner .annotation-text {
+  font-size: 1.4rem;
+  margin: 3rem 0 0;
+  line-height: 1.4;
+}
+.f-banner .img-banner {
+  margin: 3rem 0 0;
+}
+.f-banner .link-banner {
+  width: auto;
+}
+.f-banner .link-banner-large {
+  box-shadow: 1px 1px 3px;
+  border-radius: 24px;
+}
+.f-banner .bannerSetting-ttl {
+  position: relative;
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin: 4rem 0 0;
+  padding: 0 0 1.3rem;
+}
+.f-banner .bannerSetting-ttl::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-radius: 1rem;
+  background: #3c3c3c;
+  width: 6rem;
+  height: 0.3rem;
+}
+.f-banner input[type="radio"] {
+  display: none;
+}
+.f-banner .listitem {
+  margin-top: 2rem;
+}
+.f-banner .listitem:first-child {
+  margin-top: 3rem;
+}
+.f-banner .official-method {
+  display: flex;
+  flex-wrap: wrap;
+}
+.f-banner .official-method .radio-label {
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0 0.5rem 3.3rem;
+  position: relative;
+  width: auto;
+  height: 2.5rem;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+.f-banner .official-method .radio-label::before {
+  background: #fff;
+  border: 0.1rem solid #d1d1d1;
+  border-radius: 50%;
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.f-banner .official-method .radio-label::after {
+  background: #d1d1d1;
+  border-radius: 50%;
+  content: "";
+  display: block;
+  width: 1.1rem;
+  height: 1.1rem;
+  top: 0.7rem;
+  left: 0.7rem;
+  position: absolute;
+}
+.f-banner input[type="radio"]:checked + .radio-label::before {
+  border-color: #00ada6;
+}
+.f-banner input[type="radio"]:checked + .radio-label::after {
+  background: #00ada6;
+}
+.f-banner .code-text {
+  display: block;
+  border-radius: 0.5rem;
+  border: 0.1rem solid #d1d1d1;
+  background: #fafafa;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  margin: 2rem 0 0;
+  padding: 1.6rem;
+}
+.f-banner .code-textlink {
+  display: block;
+  border-radius: 0.5rem;
+  border: 0.1rem solid #d1d1d1;
+  background: #fafafa;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  min-height: 15rem;
+  margin: 3rem 0 0;
+  padding: 1.6rem 2rem;
+}
+.f-banner .codeSample-dl {
+  display: flex;
+  flex-direction: column;
+  padding-top: 1rem;
+}
+.f-banner .codeSample-ttl {
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.f-banner .codeSample-text {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+}
+.f-banner .btn-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20.5rem;
+  height: 4rem;
+  margin: 2rem auto 0;
+  padding-left: 1.7rem;
+  background: url("/assets/img/entry/pc/reservelinkbanner/icon-copy.svg") no-repeat 6.2rem center/1.2rem auto;
+  border: 0.1rem solid #d1d1d1;
+  border-radius: 2rem;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+.f-banner .btn-copy:after, .f-banner .btn-copy:before {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: 0.3s;
+}
+.f-banner .btn-copy:after {
+  content: "コピーしました";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 11rem;
+  height: 3.6rem;
+  background: #69665f;
+  border-radius: 0.2rem;
+  color: #fff;
+  top: -5.4rem;
+}
+.f-banner .btn-copy:before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 2rem 0.6rem 0 0.6rem;
+  border-color: #69665f transparent transparent transparent;
+  top: -2.4rem;
+}
+.f-banner .btn-copy.copied {
+  position: relative;
+}
+.f-banner .btn-copy.copied:after, .f-banner .btn-copy.copied:before {
+  opacity: 1;
+}
+
+.mod-switch .switch-wrap {
+  display: flex;
+  width: fit-content;
+  padding: 0.5rem;
+  background: #fff;
+  border-radius: 0.8rem;
+}
+.mod-switch .switch-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16rem;
+  height: 3.3rem;
+  background: #f5f4f2;
+  border-radius: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.mod-switch .switch-link:last-child {
+  margin-left: 0.5rem;
+}
+.mod-switch .switch-link.current, .mod-switch .switch-link:hover {
+  background: #00ada6;
+  color: #fff;
+}
+.mod-switch .switch-link.current, .mod-switch .switch-link.link-disabled {
+  pointer-events: none;
+}
+.mod-switch .switch-link:hover {
+  opacity: 1;
+}

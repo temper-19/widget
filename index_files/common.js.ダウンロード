@@ -1,0 +1,524 @@
+//変数宣言
+var body = document.querySelector('body');
+var gWrappers = document.querySelectorAll('.g-wrapper'); //全体のラッパー
+var btnMenu = document.querySelector('.js-btnMenu'); //メニューボタン
+var btnClose = document.querySelector('.js-btnClose'); //メニュー閉じるボタン
+var modalMenu = document.querySelector('.mod-menu'); //モーダル全体（背景含む）
+var navi = document.querySelectorAll('.navi-item'); //モーダルのコンテンツ
+var tmp_navi = document.querySelectorAll('.tmp-navi-item'); //モーダルのコンテンツ(SPのみ表示する仮のもの)
+var header = document.querySelector('.g-header'); //ヘッダー
+var shopName = document.querySelector('.shop-name');
+var topPos = 0; //縦スクロール量
+
+/* ハンバーガーメニュー
+ *****************************************/
+
+//イベント登録
+if (btnMenu != null) {
+  btnMenu.addEventListener(
+    'click',
+    function () {
+      modalOpen(header);
+    },
+    false
+  );
+}
+
+if (btnClose != null) {
+  btnClose.addEventListener(
+    'click',
+    function () {
+      modalClose(header);
+    },
+    false
+  );
+}
+if (modalMenu != null) {
+  modalMenu.addEventListener(
+    'click',
+    function () {
+      modalClose(header);
+    },
+    false
+  );
+}
+if (navi != null) {
+  for (var i = 0; i < navi.length; i++) {
+    navi[i].addEventListener(
+      'click',
+      function (e) {
+        e.stopPropagation();
+      },
+      false
+    );
+  }
+}
+
+//SP版のみハンバーガーメニューに仮のリンク表示(暫定対応)
+if (tmp_navi != null) {
+  for (var i = 0; i < tmp_navi.length; i++) {
+    tmp_navi[i].addEventListener(
+      'click',
+      function (e) {
+        e.stopPropagation();
+      },
+      false
+    );
+  }
+}
+//モーダルを開く
+function modalOpen(el) {
+  topPos = document.documentElement.scrollTop || document.body.scrollTop;
+  gWrappers.forEach(function (gWrapper) {
+    gWrapper.classList.add('has-modal');
+  });
+  gWrappers[gWrappers.length - 1].style.top = topPos * -1 + 'px';
+  document.querySelectorAll('.g-wrapper')
+  //ヨヤクボードのモーダル表示時は以下通らない
+  if(!el.classList.contains('f-customerEdit') && !el.classList.contains('f-customerNoData') && !el.classList.contains('f-customerDetail') && !el.classList.contains('f-reservationEdit') && !el.classList.contains('f-roomEdit') && !el.classList.contains('f-roomAdd') && !el.classList.contains('f-roomCheck')
+      && !el.classList.contains('f-roomEdit')&& !el.classList.contains('f-templateEdit')  && !el.classList.contains('f-templateCopy') && !el.classList.contains('f-alertModalDetail')  && !el.classList.contains('f-noticeModalDetail') && !el.classList.contains('f-customerConfirm')){
+    gWrappers[gWrappers.length - 1].style.zIndex = 8;
+  }
+  gWrappers[0].style.zIndex = 9;
+  el.classList.add('is-modal');
+}
+
+//モーダルを閉じる
+function modalClose(el) {
+  gWrappers.forEach(function (gWrapper) {
+    if(!el.classList.contains('f-alertModalDetail')  && !el.classList.contains('f-noticeModalDetail')){
+      gWrapper.classList.remove('has-modal');
+    }
+  });
+  window.scrollTo(0, topPos);
+  gWrappers[gWrappers.length - 1].style.zIndex = 9;
+  gWrappers[0].style.zIndex = "";
+  el.classList.remove('is-modal');
+}
+
+let spFlg = false;
+
+function deviceFlgchange() {
+  if (window.matchMedia('(max-width: 759px)').matches) {
+    spFlg = true;
+  } else {
+    spFlg = false;
+  }
+}
+
+//メニュー内アコーディオン（SPのみ）
+window.onload = function () {
+  $('.navi-item .ttl').on('click', function () {
+    deviceFlgchange();
+    if (spFlg) {
+      $(this).toggleClass('open');
+      $(this).next().slideToggle();
+    }
+  })
+  setTimeout(function () {
+    if (spFlg) {
+      $('.navi-item.information .ttl').click();
+      $('.navi-item.therapist .ttl').click();
+      $('.navi-item.room .ttl').click();
+      $('.navi-item.reservation .ttl').click();
+      $('.navi-item.sns .ttl').click();
+      $('.navi-item.others .ttl').click();
+      $('.navi-item.customer .ttl').click();
+    }
+  }, 0)
+}
+
+/* top以外のヘッダーの効果
+*****************************************/
+$(window).on("load resize", function () {
+  if (header != null) {
+    //コールバック関数の第一引数にはIntersectionObserverEntryオブジェクトが入る
+    var callback = function (entries) {
+      entries.forEach(function (entry) {
+        //isIntersectingプロパティは交差しているかどうかのbool値
+        //viewportに交差し、入ったときにisIntersecting===true、出たときにfalse
+        if (!entry.isIntersecting) {
+          header.classList.add('fixed');
+        } else {
+          header.classList.remove('fixed');
+          let headHeight = $(".g-header").outerHeight();
+          let pageHead = document.querySelector('.f-pageHead');
+          if (spFlg && headHeight > 142) {
+            if(pageHead !=null ){
+              $('.f-pageHead').css({ "padding-top": (headHeight + 12) + "px" });
+            } else {
+              $('.g-main').css({ "padding-top": (headHeight + 22) + "px" });
+            }
+          } else {
+            if(pageHead !=null ){
+              $('.f-pageHead').css({ "padding-top": "" });
+            } else {
+              $('.g-main').css({ "padding-top": "" });
+            }
+          }
+        }
+      });
+    };
+
+    //Intersection observer のオプションを作成
+    let rootMargin;
+    if (spFlg) {
+      rootMargin = '-115px';
+    } else {
+      rootMargin = '-70px';
+    }
+    var option = {
+      rootMargin: rootMargin,
+    };
+
+    //Intersection observer を作成
+    //ターゲットが IntersectionObserver に指定された閾値を満たす度にコールバックが呼び出される
+    let io = new IntersectionObserver(callback, option);
+    //監視したい複数要素をターゲットにした
+    let target;
+
+    if (spFlg) {
+      target = document.querySelector('.f-pageHead');
+    } else {
+      target = document.querySelector('.u-pageTtl');
+    }
+
+    let topTarget = document.querySelector('.f-todaysStatus .section-ttl');
+
+    if (target) {
+      io.observe(target);
+    } else if(topTarget) {
+      io.observe(topTarget);
+    }
+  }
+})
+
+$(function () {
+  entry_url = $('input[name="entry_url"]').val();
+
+  // 掲載規約
+  var openFeed = $('.js-openFeed');
+  openFeed.on('click', function () {
+    call_feedback();
+  });
+
+  var wrapper = $('#wrapper');
+  wrapper.on('click', '.closeBtn', function () {
+    $('#popupLayer').remove();
+    $('.ruleBody').remove();
+  });
+
+  function call_feedback() {
+    AjaxAPI.post(entry_url + 'ajax/rule', '', 'html')
+      .done(function (res) {
+        // ライトボックスの表示
+        var wrapper = $('#wrapper');
+        wrapper.append(res);
+      })
+      .fail(function () {
+        alert('サーバーエラーが発生しました');
+      });
+  }
+
+  /*==========================================================================================
+placeholder
+プレースホルダー設定
+==========================================================================================*/
+  var placeholder = $('.placeholder');
+  //プレースホルダー初期値設定
+  placeholder.each(function () {
+    if ($(this).val() == '' || $(this).val() == $(this).next().val()) {
+      $(this).val($(this).next().val());
+      $(this).css('color', '#d7d7d7');
+    }
+  });
+  //プレースホルダークリック設定
+  placeholder
+    .focus(function () {
+      if ($(this).val() === $(this).next().val()) {
+        $(this).val('');
+        $(this).css('color', 'inherit');
+      }
+    })
+    .blur(function () {
+      if ($(this).val() == '') {
+        $(this).val($(this).next().val());
+        $(this).css('color', '#d7d7d7');
+      }
+    });
+  //submit時、入力が無ければ値を空にする
+  $(this).submit(function () {
+    placeholder.each(function () {
+      if ($(this).css('color') == 'rgb(215, 215, 215)') {
+        $(this).val('');
+      }
+    });
+  });
+});
+
+/*==========================================================================================
+ime-mode マルチバイト文字の入力を禁止する
+==========================================================================================*/
+var this_text;
+var conv_text;
+$(function () {
+  var supportIMEMode = 'ime-mode' in document.body.style;
+
+  // 1バイト文字専用フィールド
+  $(document)
+    // ime-modeが使えないブラウザ：入力、フォーカスアウト
+    .on('keydown blur', '.ime_mode', function () {
+      // ime-modeが使えるブラウザならスキップ
+      if (supportIMEMode) return;
+
+      // マルチバイト文字が入力されたら削除
+      var target = $(this);
+      window.setTimeout(function () {
+        this_text = target.val();
+        conv_text = filterMBC(this_text);
+        // 入力文字に変更が無い場合はスキップ
+        if (conv_text == this_text) return;
+        // キャレット位置取得
+        var pos = target.caretPos();
+
+        target.val(conv_text);
+        // キャレット位置設定
+        target.caretPos(pos - 1);
+      }, 1);
+    })
+    // 全ブラウザ：貼り付け
+    .on('paste', function () {
+      var target = $(this);
+      // マルチバイト文字が入力されたら削除var target = jQuery(this);
+      window.setTimeout(function () {
+        var v = target.val();
+        target.val(filterMBC(v));
+      }, 1);
+    })
+    //enterでsubmitされる問題回避
+    .on('keypress', 'input:not(.allow_submit)', function (event) {
+      return event.which !== 13;
+    });
+});
+// 日本語(マルチバイト文字)を削除した値を返す
+function filterMBC(src) {
+  var str = '';
+  src = escape(src); // abあcd => ab%u3042cd
+  for (i = 0; i < src.length; i++) {
+    var chr = src.charAt(i);
+    if (chr == '%') {
+      var nchr = src.charAt(++i);
+      if (nchr == 'u') {
+        // 2バイト文字をスキップ
+        i += 4;
+      } else {
+        // 1バイト文字を追加
+        str += chr;
+        str += nchr;
+        str += src.charAt(++i);
+      }
+      continue;
+    }
+
+    str += chr;
+  }
+  return unescape(str);
+}
+
+/*==========================================================================================
+	キャレット位置（取得・設定）
+ ==========================================================================================*/
+$(function () {
+  var caretPos = function (pos) {
+    var item = this.get(0);
+
+    if (pos == null) return get(item);
+    if (pos == 'first') pos = 0;
+    if (pos == 'last') pos = this.val().length;
+    set(item, pos);
+    return this;
+  };
+
+  var get = function (item) {
+    var CaretPos = 0;
+    if (document.selection) {
+      // IE
+      item.focus();
+      var Sel = document.selection.createRange();
+      Sel.moveStart('character', -item.value.length);
+      CaretPos = Sel.text.length;
+    } else if (item.selectionStart || item.selectionStart == '0') {
+      // Firefox, Chrome
+      CaretPos = item.selectionStart;
+    }
+    return CaretPos;
+  };
+
+  var set = function (item, pos) {
+    if (item.setSelectionRange) {
+      // Firefox, Chrome
+      item.focus();
+      item.setSelectionRange(pos, pos);
+    } else if (item.createTextRange) {
+      // IE
+      var range = item.createTextRange();
+      range.collapse(true);
+      range.moveEnd('character', pos);
+      range.moveStart('character', pos);
+      range.select();
+    }
+  };
+  $.fn.extend({ caretPos: caretPos });
+});
+
+/*==========================================================================================
+	全角で入力されたら半角に置換する
+ ==========================================================================================*/
+$(function () {
+  $('.change_code')
+    .change(function () {
+      var str = $(this).val();
+      str = str.replace(/[０-９]/g, function (e) {
+        return String.fromCharCode(e.charCodeAt(0) - 0xfee0);
+      });
+      $(this).val(str);
+    })
+    .change();
+});
+
+/*==========================================================================================
+	QueryString情報を取得
+ ==========================================================================================*/
+/**
+ * Get Query Str
+ * @param {type} variable
+ * @returns {getQueryVariable.pair}
+ */
+function getQueryVariable(variable) {
+  var query = window.location.search.substring(1);
+  var vars = query.split('&');
+  for (var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split('=');
+    if (pair[0] == variable) {
+      return pair[1];
+    }
+  }
+}
+
+function ajax_post(data, url) {
+  var defer = $.Deferred();
+
+  $.ajax({
+    type: 'POST',
+    url: url,
+    dataType: 'json',
+    data: data,
+  })
+    .fail(function (xhr, error, errorThrown) {
+      console.log(xhr);
+      console.log(error);
+      console.log(errorThrown);
+      defer.reject();
+    })
+    .done(function (data) {
+      defer.resolve(data);
+    })
+    .always(function (data) {
+      console.log('データ通信終了');
+    });
+
+  return defer.promise(this);
+}
+
+/*==========================================================================================
+	未掲載店モーダル設定
+ ==========================================================================================*/
+$(function () {
+  const btnReturn = document.getElementById('btn-returnCessation');
+  if (btnReturn == undefined) {
+    return;
+  }
+  btnReturn.addEventListener('click', function () {
+    root = confirm(
+      '無料掲載表示の復帰申請を送信します。\n順次復帰処理が行われます。\nよろしいですか？'
+    );
+    if (root == true) {
+      //こちらに処理をどうぞ
+      var data = {};
+      var url = '/entry/ajax/sendReturnApplication';
+      data['shop_autonum'] = $('input[name="shop_autonum"]').val();
+      data['shop_name'] = $('input[name="shop_name"]').val();
+      data['shop_url'] = $('input[name="shop_detail_url"]').val();
+      //ajaxでフォームデータを送信
+      $.ajax({
+        type: 'post',
+        url: 'ajax/sendReturnApplication',
+        data: data,
+        dataType: 'json',
+      })
+        .done(function (data) {
+          if (data) {
+            window.alert('無料掲載表示の復帰申請を送信しました');
+          } else {
+            window.alert('メールの送信に失敗しました');
+          }
+        })
+        .fail(function (xhr, error) {
+          console.log('通信に失敗しました');
+          console.log(error);
+        })
+        .complete(function (data) {
+          console.log('データ通信終了');
+        });
+
+      //ページ更新処理？
+    } else {
+      return false;
+    }
+  });
+  const cessation = document.getElementById('mod-cessation');
+  const btnClose = document.getElementById('btn-closeCessation');
+  if (cessation == undefined || btnClose == undefined) {
+    return;
+  }
+  btnClose.addEventListener('click', function () {
+    cessation.classList.add('empty');
+  });
+});
+
+$(window).on("load resize", function () {
+  deviceFlgchange();
+  //ヘッダーの高さに応じてpaddingの動的変化
+  let headHeight = $(".g-header").outerHeight();
+  if (spFlg && headHeight > 142) {
+    $('.f-pageHead').css({ "padding-top": (headHeight + 12) + "px" });
+  } else {
+    $('.f-pageHead').css({ "padding-top": "" });
+  }
+})
+
+/** 
+ * Escape HTML special characters in a string
+ * @param {string} str - The string to escape
+ * @returns {string} - The escaped string
+ */
+function htmlSpecialChars(str) {
+	if (typeof str !== 'string') return str;
+	return str.replace(/[&<>"']/g, (match) => ({
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#39;'
+	}[match]));
+}
+
+/**
+ * Format date Y-m-d
+ * @param {string} dateStr 
+ * @returns {string}
+ */
+function formatDate(dateStr) {
+	const [year, month, day] = dateStr.split('/');
+	return `${year}-${month}-${day}`;
+}

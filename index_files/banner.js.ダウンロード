@@ -1,0 +1,84 @@
+$(function () {
+    //バナーのソース全選択
+    $(".code-textlink, .code-text").click(function () {
+		var idname = $(this).data("id");
+		if (idname !== undefined) {
+		    var range = document.createRange();
+		    var element = document.getElementById(idname);
+		    range.selectNodeContents(element);
+		    var selection = window.getSelection();
+		    selection.removeAllRanges();
+		    selection.addRange(range);
+		}
+    });
+
+    const js_base = document.getElementById('form_js_base');
+	for(let k in JSON.parse(js_base.value)) {
+	    //バナー毎のラジオボタン情報の取得
+	    const type = document.getElementsByName('type_' + k);
+	    //バナー毎のコードを取得
+	    const code_src = document.getElementById(k);
+	    //バナー毎のリンク先URLを取得
+	    const sample_url = document.getElementById('code_text_' + k);
+	    //ラジオボタンに応じてURLのパラメータを操作
+	    changeInnerText(type, code_src, sample_url);
+	}
+
+	//スマホのコピーボタンのイベント
+	const copyBtns = document.querySelectorAll('.js-btnCopy');
+	copyBtns.forEach((copyBtn) => {
+		copyBtn.addEventListener('click', () => {
+			copyToClipboard(copyBtn);
+		})
+	})
+
+});
+
+//スマホのコピーボタン
+const copyToClipboard = (el) => {
+	//クリックしたボタンの前の（前の）要素のテキストを取得
+	const txt = el.previousElementSibling.textContent.trim();
+	//クリップボードにコピー
+	navigator.clipboard.writeText(txt);
+	el.classList.add('copied');
+	setTimeout(() => {
+		el.classList.remove('copied');
+	},1000)
+}
+
+
+//HTMLコード内のURLを置換する
+function changeInnerText(banner_obj, src, sample_url) {
+	banner_obj.forEach(function(e) {
+    	e.addEventListener('change', function() {
+    		let target_href = "";
+    		// 現在のURLを取得
+			let href = getUrlInText(src.innerText);
+			if (this.checked) {
+				// 「メンエスじゃぱん」表記のないボタンチェックの場合
+				if (this.value == 2) {
+    				target_href = href + '?mj=official';
+    			} else {
+	   				target_href = href.replace('?mj=official', '');
+				}
+				//コード内
+    			src.innerText = src.innerText.replace(href, target_href);
+    			//リンク先URL
+    			sample_url.innerText = sample_url.innerText.replace(href, target_href);
+			}
+		});
+	});
+}
+
+//aタグURLを抜き出す
+function getUrlInText(str) {
+	//aタグ抜き出し
+    const matches = str.match(/<a(?: .+?)?>/g);
+	if (matches != null) {
+		//URL抜き出し
+		let match = matches[0].match(/href\s*=\s*"([^"]*)"/);
+		return match[1];
+	} else {
+		return [];
+	}
+}

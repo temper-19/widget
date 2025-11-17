@@ -1,0 +1,152 @@
+.g-wrapper {
+  z-index: 9;
+}
+.g-wrapper.has-modal {
+  position: fixed !important;
+}
+.g-wrapper .g-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100vw - 4%);
+  height: 80px;
+  padding: 0 10% 0 4%;
+  margin: 0 2%;
+  background: #fff;
+  border-radius: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  color: #13131e;
+  font-weight: bold;
+  position: fixed;
+  top: 20px;
+  z-index: 5;
+}
+.g-wrapper .g-header.fixed {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  position: fixed;
+}
+.g-wrapper .g-header.is-modal .shop-name {
+  position: fixed;
+}
+.g-wrapper .g-header .shop-name-link {
+  z-index: 2;
+}
+.g-wrapper .g-header .shop-name {
+  margin-right: 30px;
+  width: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+  min-width: 250px;
+  white-space: normal;
+  line-height: 1.4;
+}
+.g-wrapper .g-header .shop-name-link {
+  color: #005db5;
+}
+
+.gnavi-item.board.required::after {
+  content: '';
+  width: 15px;
+  height: 15px;
+  background: url(/assets/img/entry/pc/reserveschedule/required_pointer.svg) no-repeat;
+  position: absolute;
+  top: 0;
+  left: 101%;
+}
+
+.gnavi {
+  display: flex;
+  justify-content: space-between;
+  min-width: 300px;
+  font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Helvetica Neue", HelveticaNeue, YuGothic, "Yu Gothic Medium", "Yu Gothic", Verdana, Meiryo, sans-serif;
+}
+
+.gnavi-item {
+  margin-right: 1.5vw;
+  padding-top: 25px;
+  font-size: 10px;
+}
+.gnavi-item:last-child {
+  margin-right: 0;
+}
+.gnavi-item.home {
+  background: url(/assets/img/entry/pc/common/ico-home.svg) no-repeat center top;
+}
+.gnavi-item.board {
+  background: url(/assets/img/entry/pc/common/ico-board.svg) no-repeat center top;
+}
+.gnavi-item.room {
+  background: url(/assets/img/entry/pc/common/ico-building.svg) no-repeat center top;
+}
+.gnavi-item.therapist {
+  background: url(/assets/img/entry/pc/common/ico-user.svg) no-repeat center top;
+}
+.gnavi-item.clock {
+  background: url(/assets/img/entry/pc/common/ico-clock.svg) no-repeat center top;
+}
+.gnavi-item.customer {
+  background: url(/assets/img/entry/pc/common/ico-customer.svg) no-repeat center top;
+}
+
+.btn-menu {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+}
+
+.btn-logout {
+  display: table;
+  justify-content: center;
+  align-items: center;
+  width: 235px;
+  height: 44px;
+  margin-right: auto;
+  background: #fff;
+  border: 1px solid #9d9d9d;
+  border-radius: 25px;
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0;
+  transition: 0.5s;
+  pointer-events: none;
+  position: absolute;
+  top: 80px;
+  left: 450px;
+  text-align: center;
+}
+.btn-logout a {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+@media screen and (max-width: 1024px) {
+  .btn-logout {
+    top: 120px;
+    left: calc((100% - 624px) / 3);
+  }
+}
+.mod-navi .support {
+  font-size: 15px;
+  vertical-align: middle;
+  margin: 0 0 0 46px;
+}
+.mod-navi .support a {
+  color: #00ada6;
+  text-decoration: underline;
+}
+
+.mod-navi .link {
+  position: relative;
+}
+
+.mod-navi .infomation {
+  color: #fa7e7f;
+  position: absolute;
+  top: 45px;
+}
+
+.tmp-navi {
+  display: none;
+}

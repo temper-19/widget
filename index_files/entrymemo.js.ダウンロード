@@ -1,0 +1,114 @@
+$(function(){
+
+	//メモアコーディオンの初期開閉
+	var memo_session = $('[name=memo_session]').val();
+	if(memo_session == 2){
+		$("#accordion_box").hide();
+	}else{
+		var memo_check_num = $('[name=memo_num]:checked').val();
+		//メモが未選択の場合
+		if(memo_check_num == undefined){
+			$('#memo_num1').prop('checked',true);
+			$('.freeSpace-editSpace').hide();
+			$('#memo_box1').show();
+		//メモが選択されているの場合
+		}else{
+			$('#memo_num'+memo_check_num).prop('checked',true);
+			$('.freeSpace-editSpace').hide();
+			$('#memo_box'+memo_check_num).show();
+		}
+	}
+
+	//メモ切り替えボタン押下時
+	$('[name=memo_num]').change(function() {
+		memo_check_num = $('[name=memo_num]:checked').val();
+		$('.freeSpace-editSpace').hide();
+		$('#memo_box'+memo_check_num).show();
+		$("#accordion_box").slideDown("normal");
+		//アコーディオン開閉セッション更新(1⇒開く／2⇒閉じる)
+		session_ajax(1);
+	});
+
+	//アコーディオン閉じるリンククリック時（common_pc.jsはデザイン上使えない）
+	$("#trigger").click(function() {
+		//アコーディオンを閉じる
+		$("#accordion_box").slideUp("normal");
+		//メモのチェックを外す
+		$('[name=memo_num]').prop('checked',false);
+		//アコーディオン開閉セッション更新(1⇒開く／2⇒閉じる)
+		session_ajax(2);
+	});
+
+	//メモ登録ボタン押下時
+	$("[name=update]").click(function(){
+
+		//店舗ID取得
+		var shop_id = $('[name=shop_id]').val();
+		//メモ番号取得
+		var order = $(this).prop('id').slice(-1);
+		//メモタイトル取得
+		var title = $('[name=memo_title'+order+']').val().substring(0,6);
+		//メモ内容取得
+		var memo = $('[name=memo'+order+']').val().substring(0,150);
+
+		//プレースホルダーと同じ文言の場合は空に
+		if(title === $('[name=memo_title'+order+']').next().val().substring(0,6)){
+			title = '';
+		}
+		if(memo === $('[name=memo'+order+']').next().val().substring(0,150)){
+			memo = '';
+		}
+
+		//タイトルが未入力の場合アラート表示
+		if(title === ''){
+			alert("タイトルを入力して下さい");
+			return;
+		}
+		ajax = $.ajax({
+
+			type: "POST",
+			url: entry_url + 'ajax/updateentrymemo',
+			data: {
+				shop_id : shop_id,
+				order : order,
+				title : title,
+				memo : memo
+			},
+			dataType : 'html',
+			success: function(res){
+				if(res == 1){
+                                    // 登録したタイトルをラジオボタンのラベルの値に反映
+                                    $("label[for='" + $("input:radio[name='memo_num']:checked").attr("id") + "']").text(title);
+
+                                    // メッセージ表示
+				    $(".freeSpace").showBalloon(
+					{
+					    contents:'更新完了',
+					    css:{opacity:"1"}
+					});
+				    setTimeout(function(){
+				    	$(".freeSpace").hideBalloon();
+				    },1500);
+				}else{
+					alert("予期せぬエラーが発生しました");
+				}
+			}
+		});
+	});
+});
+
+function session_ajax(type){
+
+	ajax = $.ajax({
+
+		type: "POST",
+		url: entry_url + 'ajax/updatememosession',
+		data: {type : type},
+		dataType : 'html',
+		success: function(res){
+			if(res == 2){
+				alert("予期せぬエラーが発生しました");
+			}
+		}
+	});
+}

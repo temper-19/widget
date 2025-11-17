@@ -1,0 +1,218 @@
+/**!
+ * trunk8 v1.3.2
+ * https://github.com/rviscomi/trunk8
+ *
+ * Copyright 2012 Rick Viscomi
+ * Released under the MIT License.
+ *
+ * Date: October 21, 2012
+ */
+(function($){
+	var methods,utils,SIDES={center:'center',left:'left',right:'right'},WIDTH={auto:'auto'};
+	function trunk8(element){
+		this.$element=$(element);
+		this.original_text=this.$element.html();
+		this.settings=$.extend({},$.fn.trunk8.defaults);
+	}
+	trunk8.prototype.updateSettings=function(options){
+		this.settings=$.extend(this.settings,options);
+	};
+	function truncate(){
+		var data=this.data('trunk8'),settings=data.settings,width=settings.width,side=settings.side,fill=settings.fill,line_height=utils.getLineHeight(this)*settings.lines,str=data.original_text,length=str.length,max_bite='',lower,upper,bite_size,bite;
+		this.html(str);
+		if(width===WIDTH.auto){
+			if(this.height()<=line_height){
+				return;
+			}
+			lower=0;
+			upper=length-1;
+			while(lower<=upper){
+				bite_size=lower+((upper-lower)>>1);
+				bite=utils.eatStr(str,side,length-bite_size,fill);
+				this.html(bite);
+				if(this.height()>line_height){
+					upper=bite_size-1;
+				}else{
+					lower=bite_size+1;
+					max_bite=(max_bite.length>bite.length)?max_bite:bite;
+				}
+			}this.html('');
+			this.html(max_bite);
+			if(settings.tooltip){
+				//this.attr('title',str);
+			}
+		}else if(!isNaN(width)){
+			//bite_size=length-width;bite=utils.eatStr(str,side,bite_size,fill);this.html(bite);if(settings.tooltip){this.attr('title',str);}
+			bite_size=length-width;bite=utils.eatStr(str,side,bite_size,fill);this.html(bite);
+		}else{
+			$.error('Invalid width "'+width+'".');
+		}
+	}
+	methods={
+		init:function(options){
+			return this.each(function(){
+				var $this=$(this),data=$this.data('trunk8');
+				if(!data){
+					$this.data('trunk8',(data=new trunk8(this)));
+				}
+				data.updateSettings(options);
+				truncate.call($this);
+			});
+		},
+		update:function(new_string){
+			return this.each(function(){
+				var $this=$(this);
+				if(new_string){
+					$this.data('trunk8').original_text=new_string;
+				}
+				truncate.call($this);
+			});
+		},
+		revert:function(){
+			return this.each(function(){
+				var text=$(this).data('trunk8').original_text;
+				$(this).html(text);
+			});
+		},
+		getSettings:function(){
+			return this.get(0).data('trunk8').settings;
+		}
+	};
+	utils={
+		eatStr:function(str,side,bite_size,fill){
+			var length=str.length,key=utils.eatStr.generateKey.apply(null,arguments),half_length,half_bite_size;
+			if(utils.eatStr.cache[key]){
+				return utils.eatStr.cache[key];
+			}
+			if((typeof str!=='string')||(length===0)){
+				$.error('Invalid source string "'+str+'".');
+			}
+			if((bite_size<0)||(bite_size>length)){
+				$.error('Invalid bite size "'+bite_size+'".');
+			}else if(bite_size===0){
+				return str;
+			}
+			if(typeof(fill+'')!=='string'){
+				$.error('Fill unable to be converted to a string.');
+			}
+			switch(side){
+				case SIDES.right:
+					return utils.eatStr.cache[key]=$.trim(str.substr(0,length-bite_size))+fill;
+				case SIDES.left:
+					return utils.eatStr.cache[key]=fill+$.trim(str.substr(bite_size));
+				case SIDES.center:half_length=length>>1;
+					half_bite_size=bite_size>>1;
+					return utils.eatStr.cache[key]=$.trim(utils.eatStr(str.substr(0,length-half_length),SIDES.right,bite_size-half_bite_size,''))+fill+$.trim(utils.eatStr(str.substr(length-half_length),SIDES.left,half_bite_size,''));
+				default:$.error('Invalid side "'+side+'".');
+			}
+		},
+		getLineHeight:function(elem){
+			var $elem=$(elem),float=$elem.css('float'),position=$elem.css('position'),html=$elem.html(),wrapper_id='line-height-test',line_height;
+			if(float!=='none'){
+				$elem.css('float','none');
+			}
+			if(position==='absolute'){
+				$elem.css('position','static');
+			}
+			$elem.html('i').wrap('<div id="'+wrapper_id+'" />');
+			line_height=$('#'+wrapper_id).innerHeight();$elem.html(html).css({'float':float,'position':position}).unwrap();
+			return line_height;
+		}
+	};
+	utils.eatStr.cache={};
+	utils.eatStr.generateKey=function(){return Array.prototype.join.call(arguments,'');};
+	$.fn.trunk8=function(method){
+		if(methods[method]){
+			return methods[method].apply(this,Array.prototype.slice.call(arguments,1));
+		}else if(typeof method==='object'||!method){return methods.init.apply(this,arguments);
+		}else{$.error('Method '+method+' does not exist on jQuery.trunk8');
+		}
+	};
+	$.fn.trunk8.defaults={fill:'&hellip;',lines:1,side:SIDES.right,tooltip:true,width:WIDTH.auto};
+})(jQuery);
+
+$(function(){
+	// *****行数制限関数
+	// 初期表示時
+	my_trunk_all_run();
+	// ウインドウ幅変更時
+	$(window).resize(function() {
+		var ua = window.navigator.userAgent;
+		// iPhoneは除外
+		if(ua.indexOf('iPhone') < 0 && ua.indexOf('iPad') < 0) {
+			my_trunk_all_run();
+		}
+	});
+	// iPhone縦横回転時
+	$(window).on('orientationchange',function() {
+		my_trunk_all_run();
+	});
+
+	// read_more トグルアクション
+	$(document).on('click', '.trunk_more_read', function(){
+		$(this).parent().parent().trunk8('revert').append('<a class="trunk_less_read">閉じる</a>');
+	});
+	$(document).on('click', '.trunk_less_read', function(){
+		my_trunk_run($(this).parent());
+	});
+
+	// 続きを読むクリック時 口コミ一覧用
+	$(document).on('click', '.transition_link', function() {
+		parent_id = $(this).parent().parent().attr('id').replace('transition_link_', '');
+		url = parent_id;
+		location.href = url;
+	});
+
+	// 続きを見るSP
+	$(document).on('click', '.more_link', function() {
+		parent_id = $('.trunk8_7_addlink').prop('id').replace('more_link_', '');
+		url_id = parent_id.split('_');
+		link = location.href  + url_id[1] + '/';
+		location.href = link;
+	});
+
+
+});
+
+// 全実行
+function my_trunk_all_run (){
+	$('[class^=trunk8_]').each(function(){
+		my_trunk_run($(this));
+	});
+}
+
+// 指定実行
+function my_trunk_run(elem){
+	var rows = elem.attr('class').match(/trunk8_[0-9]+[_addlink|_addread|_adddetail|_addspan|_adddetail1|_adddetail2|_addrecommend]*/);
+	rows = rows[0].split('_');
+	var row = rows[1];
+	var comp_str = '<span>…</span>';
+	if(rows.length > 2){
+		if(rows[2] == 'addlink'){
+			comp_str += "<span><a class='more_link'>続きを見る</a></span>";
+		}else if(rows[2] == 'addread'){
+			comp_str += "<span><a class='more_read'>もっと見る</a></span>";
+		}else if(rows[2] == 'adddetail'){
+			comp_str += "<span><a class='more_read'>続きを見る</a></span>";
+		}else if(rows[2] == 'addspan'){
+			comp_str += "<span>詳細を見る</span>";
+		} else if(rows[2] == 'adddetail1') {
+			comp_str += "<span><a class='trunk_more_read'>続きを見る</a></span>";
+		} else if(rows[2] == 'adddetail2') {
+			comp_str += "<span><a class='trunk_more_read'>詳細を見る</a></span>";
+		}else if(rows[2] == 'addrecommend'){
+			comp_str += "<span><a class='transition_link'>続きを読む</a></span>";
+		}else if(rows[2] == 'addarticleall') {
+			comp_str += "<span><a class='transition_link'>記事本文</a></span>";
+		}
+	}
+	elem.trunk8({
+		lines: row,
+		fill: comp_str
+	});
+	var txt = elem.html();
+	if(txt.match(/<br</g)){
+		var txt2 = txt.replace(/<br<(.*?)$/g, comp_str);
+		elem.html(txt2);
+	}
+}

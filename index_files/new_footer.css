@@ -1,0 +1,27 @@
+/* ============================================================================
+
+		new_footer
+
+============================================================================ */
+.footer {
+  padding: 3rem 2rem 2rem;
+  background-color: #3C3C3C;
+}
+.footer .copyright {
+  color: white;
+  text-align: center;
+  font-size: 1.3rem;
+}
+.footer .bnr {
+  width: 100%;
+  height: auto;
+}
+.footer .banner {
+  margin-bottom: 4rem;
+}
+.footer .banner li {
+  margin-top: 2rem;
+}
+.footer .banner li:first-child {
+  margin-top: 0;
+}

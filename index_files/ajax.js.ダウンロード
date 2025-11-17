@@ -1,0 +1,28 @@
+/* 
+ *  Ajaxクラス定義 -------------------------------------------------------------------
+ * */
+var run;
+var AjaxAPI = {
+    post: function(fn, val, datatype, pD, cT) {
+        var defer = $.Deferred();
+        
+        if(pD !== false){
+            pD = true;
+        }
+        if(cT !== false){
+            cT = 'application/x-www-form-urlencoded';
+        }
+        
+        run = $.ajax({
+            type: 'POST',
+            url: fn,
+            data: val,
+            processData: pD,   // jQuery がデータを処理しないよう指定
+            contentType: cT,   // jQuery が contentType を設定しないよう指定
+            dataType: datatype,
+            success: defer.resolve,
+            error: defer.reject
+        });
+        return defer.promise();
+    }
+};

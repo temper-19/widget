@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>#秒セラ サムネウィジェット</title>
+<style>
+:root {
+  --brand: #333333;
+  --gap: 12px;
+  --radius: 4px;
+  --font-main: system-ui,-apple-system,'Helvetica Neue',sans-serif;
+}
+html,body{margin:0;padding:0;background:var(--brand);color:#fff;font-family:var(--font-main);font-size:16px;line-height:1.4;}
+/* wrapper */
+.mp-root{width:100%;padding:16px 16px 24px 16px;box-sizing:border-box;}
+/* header */
+.mp-head{margin-bottom:16px;text-align:left;}
+.mp-head-name{font-weight:700;font-size:18px;display:block;line-height:1.2;}
+.mp-head-sub{opacity:.75;font-size:13px;line-height:1.2;margin-top:2px;}
+/* list */
+.mp-list{display:block;margin:0;padding:0;list-style:none;}
+.mp-item{margin-bottom:var(--gap);}
+.mp-card{display:block;text-decoration:none;color:#fff;}
+/* media wrapper: responsive aspect; fallback auto */
+.mp-media{
+  position:relative;
+  width:100%;
+  background:var(--brand);
+  /* default 9:16 box; will be overwritten inline per-item if aspect known */
+  aspect-ratio:9/16;
+  overflow:hidden;
+  border-radius:var(--radius);
+}
+/* the thumb itself */
+.mp-thumb{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover; /* default for portrait */
+  background:var(--brand);
+}
+.mp-media.landscape .mp-thumb{object-fit:contain;background:var(--brand);} /* letterbox visible上下 */
+.mp-media.square .mp-thumb{object-fit:contain;background:var(--brand);}
+.mp-meta{padding:8px 4px 0 4px;display:flex;align-items:flex-start;gap:8px;font-size:14px;line-height:1.2;}
+.mp-face{
+  width:40px;height:40px;flex:0 0 40px;border-radius:50%;object-fit:cover;background:#666;
+}
+.mp-txt{flex:1 1 auto;min-width:0;}
+.mp-name{display:block;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mp-sub{display:block;font-size:12px;opacity:.75;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* empty */
+.mp-empty{padding:48px 16px;text-align:center;font-size:16px;opacity:.8;}
+/* accessibility focus */
+.mp-card:focus-visible{outline:2px solid #fff;outline-offset:2px;}
+</style>
+</head>
+<body>
+<div id="mp-root" class="mp-root" role="region" aria-label="#秒セラ動画サムネ一覧">
+  <!-- JSが埋め込む -->
+</div>
+<script>
+(function(){
+  const qs = new URLSearchParams(location.search);
+  const storeId = qs.get('store_id') || 'demo';
+  const limit = parseInt(qs.get('limit')||'20',10);
+  const showHeader = qs.get('show_header') !== '0';
+  const showShift = qs.get('show_shift') !== '0';
+  const autoHeight = qs.get('autoheight') === '1';
+
+  // 仮: サーバ側で返す想定データ
+  const mockStore = {
+    id: storeId,
+    name: 'ROSE SPA【ロゼスパ】',
+    sub: '日本橋 / メンズエステ'
+  };
+  const mockItems = [
+    {
+      therapist_id:'t001',
+      therapist_name:'せりな',
+      age:22,
+      shift_str:'本日出勤 19:00～翌3:00',
+      thumb_url:'https://picsum.photos/600/900?random=11', // portrait
+      face_url:'https://picsum.photos/100/100?random=12',
+      aspect:'portrait',
+      dest_url:'https://mens-est.jp/shop/2020100113309/girllist/girl/33447/'
+    },
+    {
+      therapist_id:'t002',
+      therapist_name:'1行最大16文字文字数制限？',
+      age:22,
+      shift_str:'次回出勤 7/4(金)',
+      thumb_url:'https://picsum.photos/900/600?random=21', // landscape
+      face_url:'https://picsum.photos/100/100?random=22',
+      aspect:'landscape',
+      dest_url:'https://mens-est.jp/shop/2020100113309/girllist/girl/33447/'
+    },
+    {
+      therapist_id:'t003',
+      therapist_name:'みさき',
+      age:25,
+      shift_str:'要お問い合わせ',
+      thumb_url:'https://picsum.photos/800/800?random=31', // square
+      face_url:'https://picsum.photos/100/100?random=32',
+      aspect:'square',
+      dest_url:'https://mens-est.jp/shop/2020100113309/girllist/girl/33447/'
+    }
+  ].slice(0,limit);
+
+  const root = document.getElementById('mp-root');
+
+  // header
+  if(showHeader){
+    const head = document.createElement('div');
+    head.className='mp-head';
+    head.innerHTML = `<span class="mp-head-name">${mockStore.name}</span>` +
+                     `<span class="mp-head-sub">${mockStore.sub}</span>`;
+    root.appendChild(head);
+  }
+
+  // list
+  if(mockItems.length){
+    const ul = document.createElement('ul');
+    ul.className='mp-list';
+    mockItems.forEach(item=>{
+      const li=document.createElement('li');
+      li.className='mp-item';
+
+      const a=document.createElement('a');
+      a.className='mp-card';
+      a.href=item.dest_url;
+      a.target='_blank';
+      a.rel='noopener';
+      a.setAttribute('aria-label',`${item.therapist_name} (${item.age})`);
+
+      // media
+      const media=document.createElement('div');
+      media.className='mp-media '+(item.aspect||'portrait');
+
+      // if we wanted to enforce aspect via padding hack we could; for now CSS aspect-ratio changes:
+      if(item.aspect==='landscape'){ media.style.aspectRatio='16 / 9'; }
+      else if(item.aspect==='square'){ media.style.aspectRatio='1 / 1'; }
+      else { media.style.aspectRatio='9 / 16'; }
+
+      const img=document.createElement('img');
+      img.className='mp-thumb';
+      img.src=item.thumb_url;
+      img.alt=item.therapist_name;
+
+      media.appendChild(img);
+      a.appendChild(media);
+
+      // meta
+      const meta=document.createElement('div');
+      meta.className='mp-meta';
+
+      const face=document.createElement('img');
+      face.className='mp-face';
+      face.src=item.face_url;
+      face.alt='';
+
+      const txt=document.createElement('span');
+      txt.className='mp-txt';
+      const nm=document.createElement('span');
+      nm.className='mp-name';
+      nm.textContent = `${item.therapist_name} (${item.age})`;
+      txt.appendChild(nm);
+      if(showShift){
+        const sb=document.createElement('span');
+        sb.className='mp-sub';
+        sb.textContent=item.shift_str||'';
+        txt.appendChild(sb);
+      }
+
+      meta.appendChild(face);
+      meta.appendChild(txt);
+      a.appendChild(meta);
+
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    root.appendChild(ul);
+  }else{
+    const empty=document.createElement('div');
+    empty.className='mp-empty';
+    empty.textContent='動画がありません。';
+    root.appendChild(empty);
+  }
+
+  // autoheight ping
+  function sendHeight(){
+    if(!autoHeight) return;
+    const h=document.body.scrollHeight;
+    parent.postMessage({mpSeraHeight:h, mpSeraId:storeId},'*');
+  }
+  window.addEventListener('load',sendHeight);
+  window.addEventListener('resize',sendHeight);
+  // small delay reflow
+  setTimeout(sendHeight,200);
+
+})();
+</script>
+</body>
+</html>
