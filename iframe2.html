@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ウィジェット デモ（タブ切り替え対応）</title>
+    <style>
+        /* CSS */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans CJK JP", "Original Yu Gothic", "Yu Gothic", sans-serif;
+            margin: 0;
+            padding: 0; 
+            background-color: #f9f9f9; 
+        }
+        .widget-header {
+            background-color: #11d87b; 
+            color: white;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .widget-header a {
+            color: white;
+            font-size: 12px;
+            font-weight: normal;
+            text-decoration: none;
+        }
+        .widget-header a:hover {
+            text-decoration: underline;
+        }
+
+        /* タブ切り替え */
+        .widget-tabs {
+            display: flex;
+            padding: 10px; 
+            background-color: #f9f9f9; 
+        }
+        .tab-item {
+            flex: 1; 
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 5px;
+            display: block;
+            border: 1px solid #ccc; 
+            transition: background-color 0.2s, color 0.2s;
+            cursor: pointer; /* クリック可能であることを示す */
+        }
+        .tab-item + .tab-item {
+            margin-left: 10px;
+        }
+        .tab-item.active {
+            background-color: #11d87b; 
+            color: #ffffff;
+            border-color: #11d87b;
+        }
+        .tab-item:not(.active) {
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        /* コンテンツエリア */
+        .widget-content {
+            padding: 10px;
+            padding-top: 0; 
+        }
+        /* 各コンテンツは最初は非表示 */
+        .tab-pane {
+            display: none;
+        }
+        /* アクティブなコンテンツのみ表示 */
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* 写メ日記リスト (3列正方形) */
+        .diary-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .diary-item {
+            background-color: #ffffff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+        .diary-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .diary-item a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+        .diary-image-container {
+            position: relative; 
+        }
+        .diary-image-container img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1; /* 正方形 */
+            object-fit: cover;
+            display: block; 
+        }
+       
+
+        /* ▼▼▼ 追加：動画リスト (2列縦長) ▼▼▼ */
+        .video-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2列 */
+            gap: 10px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .video-item {
+            background-color: #ffffff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+        .video-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .video-item a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+        .video-image-container {
+            position: relative; 
+        }
+        .video-image-container img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 3 / 4; /* 縦長 (3:4) */
+            object-fit: cover;
+            display: block; 
+        }
+        .video-play-icon { /* 再生ボタンアイコンのデモ */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px; /* アイコンの大きさ */
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            pointer-events: none; /* クリックを透過させる */
+        }
+        /* ▲▲▲ 追加完了 ▲▲▲ */
+
+
+        .widget-footer {
+            text-align: center;
+            padding: 15px 10px;
+            font-size: 13px;
+            background-color: #fff;
+            border-top: 1px solid #eee;
+        }
+        .pagination {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .pagination a {
+            color: #f39c12; 
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            border: 1px solid #f39c12;
+            border-radius: 4px;
+        }
+        .pagination span.disabled {
+            color: #ccc;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: not-allowed;
+        }
+        .pagination .page-info {
+            color: #555;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="widget-header">
+        <span>メンエスじゃぱん_ウィジェットデモ</span>
+    </header>
+
+    <div class="widget-tabs">
+        <a href="#photoContent" id="photoTab" class="tab-item active">写メ日記</a>
+        <a href="#videoContent" id="videoTab" class="tab-item">動画</a>
+    </div>
+
+    <div class="widget-content">
+        <div id="photoContent" class="tab-pane active">
+            <ul class="diary-list">
+                
+                <li class="diary-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb1.jpg" alt="写メ日記1">
+                        </div>
+                    </a>
+                </li>
+                <li class="diary-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb2.jpg" alt="写メ日記2">
+                        </div>
+                    </a>
+                </li>
+                <li class="diary-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb3.jpg" alt="写メ日記3">
+                        </div>
+                    </a>
+                </li>
+
+                <li class="diary-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb4.jpg" alt="写メ日記4">
+                        </div>
+                    </a>
+                </li>
+                <li class="diary-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb5.jpg" alt="写メ日記5">
+                        </div>
+                    </a>
+                </li>
+                <li class="diary-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb6.jpg" alt="写メ日記6">
+                        </div>
+                    </a>
+                </li>
+
+                <li class="diary-item">
+                    <a href="#" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb7.jpg" alt="写メ日記7">
+                        </div>
+                    </a>
+                </li>
+                <li class="diary-item">
+                    <a href="#" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb8.jpg" alt="写メ日記8">
+                        </div>
+                    </a>
+                </li>
+                <li class="diary-item">
+                    <a href="#" target="_blank">
+                        <div class="diary-image-container">
+                            <img src="./assets/img/tempo_thumb9.jpg" alt="写メ日記9">
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="videoContent" class="tab-pane">
+            <ul class="video-list">
+                <li class="video-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="video-image-container">
+                            <img src="./assets/img/r01.jpg" alt="動画1">
+                            <span class="video-play-icon">&#9658;</span> </div>
+                    </a>
+                </li>
+                <li class="video-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="video-image-container">
+                            <img src="./assets/img/tempo_thumb10.jpg" alt="動画2">
+                            <span class="video-play-icon">&#9658;</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="video-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="video-image-container">
+                            <img src="./assets/img/tempo_thumb11.jpg" alt="動画3">
+                            <span class="video-play-icon">&#9658;</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="video-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="video-image-container">
+                            <img src="./assets/img/tempo_thumb12.jpg" alt="動画4">
+                            <span class="video-play-icon">&#9658;</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="video-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="video-image-container">
+                            <img src="./assets/img/tempo_thumb13.jpg" alt="動画5">
+                            <span class="video-play-icon">&#9658;</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="video-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="video-image-container">
+                            <img src="./assets/img/tempo_thumb14.jfif" alt="動画6">
+                            <span class="video-play-icon">&#9658;</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="video-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="video-image-container">
+                            <img src="./assets/img/tempo_thumb15.jpg" alt="動画7">
+                            <span class="video-play-icon">&#9658;</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="video-item">
+                    <a href="https://mens-est.jp/shop/iwakitest/video/" target="_blank">
+                        <div class="video-image-container">
+                            <img src="./assets/img/tempo_thumb16.jpg" alt="動画8">
+                            <span class="video-play-icon">&#9658;</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        </div>
+    
+    <footer class="widget-footer">
+        <div class="pagination">
+            <span class="disabled">前へ</span>
+            <span class="page-info">1-9 / 8300件</span>
+            <a href="#">次へ</a>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript (タブ切り替え機能)
+        document.addEventListener('DOMContentLoaded', function() {
+            const photoTab = document.getElementById('photoTab');
+            const videoTab = document.getElementById('videoTab');
+            const photoContent = document.getElementById('photoContent');
+            const videoContent = document.getElementById('videoContent');
+
+            // タブのクリックイベントリスナー
+            photoTab.addEventListener('click', function(e) {
+                e.preventDefault(); // リンクのデフォルト動作をキャンセル
+                
+                // アクティブなタブとコンテンツを切り替える
+                photoTab.classList.add('active');
+                videoTab.classList.remove('active');
+                photoContent.classList.add('active');
+                videoContent.classList.remove('active');
+                
+                // 写メ日記タブがアクティブな時はフッターのページ情報を変更（例）
+                document.querySelector('.page-info').textContent = '1-9 / 8300件';
+            });
+
+            videoTab.addEventListener('click', function(e) {
+                e.preventDefault(); // リンクのデフォルト動作をキャンセル
+
+                // アクティブなタブとコンテンツを切り替える
+                videoTab.classList.add('active');
+                photoTab.classList.remove('active');
+                videoContent.classList.add('active');
+                photoContent.classList.remove('active');
+
+                // 動画タブがアクティブな時はフッターのページ情報を変更（例）
+                document.querySelector('.page-info').textContent = '1-8 / 120件';
+            });
+        });
+    </script>
+
+</body>
+</html>
